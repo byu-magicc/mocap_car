@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(kb_autopilot)
+project(car_autopilot)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 set(CMAKE_CXX_FLAGS "-std=c++11 -fopenmp")

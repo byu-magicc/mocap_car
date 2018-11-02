@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>kb_autopilot</name>
+  <name>car_autopilot</name>
   <version>0.0.0</version>
-  <description>The kb_autopilot package</description>
+  <description>The car_autopilot package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
