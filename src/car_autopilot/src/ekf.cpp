@@ -34,7 +34,7 @@ EKF::EKF() :
   pose_sub_ = nh_.subscribe("/pose", 1, &EKF::poseUpdate, this);
 
   // set up ROS publishers
-  state_pub_ = nh_.advertise<kb_autopilot::State>("/ekf_state", 1);
+  state_pub_ = nh_.advertise<car_autopilot::State>("/ekf_state", 1);
 }
 
 
@@ -52,14 +52,14 @@ void EKF::encoderCallback(const kb_utils::EncoderConstPtr& msg)
   if (!is_driving_)
     if (fabs(v_meas) > 0.002)
       is_driving_ = true;
-  
+
   // unpack state
   double pn  = x_(0);
   double pe  = x_(1);
   double psi = x_(2);
   double br  = x_(3);
   double bv  = x_(4);
- 
+
   if (is_driving_)
   {
     // state kinematics
@@ -107,7 +107,7 @@ void EKF::insCallback(const nav_msgs::OdometryConstPtr& msg)
     //                         msg->twist.twist.angular.z);
     // Eigen::Vector3d omega_v1 = R_v1_to_b.transpose()*omega_b;
     // heading_rate_ = omega_v1(2);
-    
+
     // just use gyro z-axis measurement because using INS attitude estimate is not GPS-denied
     heading_rate_ = msg->twist.twist.angular.z;
 
@@ -163,14 +163,14 @@ void EKF::poseUpdate(const geometry_msgs::PoseStampedConstPtr& msg)
 
 void EKF::publishState(double u)
 {
-  kb_autopilot::State msg;
+  car_autopilot::State msg;
   msg.p_north = x_(0); // north position (m)
   msg.p_east =  x_(1); // east position (m)
   msg.psi =     x_(2); // unwrapped yaw angle (rad)
   msg.b_r =     x_(3); // heading rate bias
   msg.b_u =     x_(4); // velocity bias
   msg.u =       u;     // body fixed forward velocity (m/s)
-  
+
   msg.psi_deg = wrapAngle(x_(2))*180/M_PI; // unwrapped yaw angle (deg)
   state_pub_.publish(msg);
 }

@@ -1,7 +1,7 @@
 #include "path_follower_example.h"
 
 
-namespace kb_autopilot
+namespace car_autopilot
 {
 
 path_follower_example::path_follower_example()

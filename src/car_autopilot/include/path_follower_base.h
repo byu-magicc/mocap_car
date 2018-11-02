@@ -2,14 +2,14 @@
 #define PATH_FOLLOWER_BASE_H
 
 #include <ros/ros.h>
-#include <kb_autopilot/State.h>
-#include <kb_autopilot/Controller_Commands.h>
+#include <car_autopilot/State.h>
+#include <car_autopilot/Controller_Commands.h>
 #include <dynamic_reconfigure/server.h>
-//#include <kb_autopilot/FollowerConfig.h>
-#include <kb_autopilot/Current_Path.h>
+//#include <car_autopilot/FollowerConfig.h>
+#include <car_autopilot/Current_Path.h>
 
 
-namespace kb_autopilot
+namespace car_autopilot
 {
 
 enum class path_type
@@ -67,18 +67,18 @@ private:
   double update_rate_ = 100.0;
   ros::Timer update_timer_;
 
-  kb_autopilot::Controller_Commands controller_commands_;
+  car_autopilot::Controller_Commands controller_commands_;
   struct params_s  params_;            /**< params */
   struct input_s input_;
 
-  void vehicle_state_callback(const kb_autopilot::StateConstPtr &msg);
+  void vehicle_state_callback(const car_autopilot::StateConstPtr &msg);
   bool state_init_;
-  void current_path_callback(const kb_autopilot::Current_PathConstPtr &msg);
+  void current_path_callback(const car_autopilot::Current_PathConstPtr &msg);
   bool current_path_init_;
 
-//  dynamic_reconfigure::Server<kb_autopilot::FollowerConfig> server_;
-//  dynamic_reconfigure::Server<kb_autopilot::FollowerConfig>::CallbackType func_;
-//  void reconfigure_callback(kb_autopilot::FollowerConfig &config, uint32_t level);
+//  dynamic_reconfigure::Server<car_autopilot::FollowerConfig> server_;
+//  dynamic_reconfigure::Server<car_autopilot::FollowerConfig>::CallbackType func_;
+//  void reconfigure_callback(car_autopilot::FollowerConfig &config, uint32_t level);
 
   void update(const ros::TimerEvent &);
 };

@@ -1,15 +1,15 @@
 #include "path_follower_base.h"
 #include "path_follower_example.h"
 
-namespace kb_autopilot
+namespace car_autopilot
 {
 
 path_follower_base::path_follower_base():
   nh_(ros::NodeHandle()),
   nh_private_(ros::NodeHandle("~"))
 {
-  vehicle_state_sub_ = nh_.subscribe<kb_autopilot::State>("state", 1, &path_follower_base::vehicle_state_callback, this);
-  current_path_sub_ = nh_.subscribe<kb_autopilot::Current_Path>("current_path", 1,
+  vehicle_state_sub_ = nh_.subscribe<car_autopilot::State>("state", 1, &path_follower_base::vehicle_state_callback, this);
+  current_path_sub_ = nh_.subscribe<car_autopilot::Current_Path>("current_path", 1,
                       &path_follower_base::current_path_callback, this);
 
   nh_private_.param<double>("CHI_INFTY", params_.psi_infty, 1.0472);
@@ -20,7 +20,7 @@ path_follower_base::path_follower_base():
 //  server_.setCallback(func_);
 
   update_timer_ = nh_.createTimer(ros::Duration(1.0/update_rate_), &path_follower_base::update, this);
-  controller_commands_pub_ = nh_.advertise<kb_autopilot::Controller_Commands>("controller_commands", 1);
+  controller_commands_pub_ = nh_.advertise<car_autopilot::Controller_Commands>("controller_commands", 1);
 
   state_init_ = false;
   current_path_init_ = false;
@@ -34,14 +34,14 @@ void path_follower_base::update(const ros::TimerEvent &)
   if (state_init_ == true && current_path_init_ == true)
   {
     follow(params_, input_, output);
-    kb_autopilot::Controller_Commands msg;
+    car_autopilot::Controller_Commands msg;
     msg.psi_c = output.psi_c;
     msg.u_c = output.u_c;
     controller_commands_pub_.publish(msg);
   }
 }
 
-void path_follower_base::vehicle_state_callback(const kb_autopilot::StateConstPtr &msg)
+void path_follower_base::vehicle_state_callback(const car_autopilot::StateConstPtr &msg)
 {
   input_.pn = msg->p_north;               /** position north */
   input_.pe = msg->p_east;               /** position east */
@@ -51,7 +51,7 @@ void path_follower_base::vehicle_state_callback(const kb_autopilot::StateConstPt
   state_init_ = true;
 }
 
-void path_follower_base::current_path_callback(const kb_autopilot::Current_PathConstPtr &msg)
+void path_follower_base::current_path_callback(const car_autopilot::Current_PathConstPtr &msg)
 {
   if (msg->path_type == msg->LINE_PATH)
     input_.p_type = path_type::Line;
@@ -71,7 +71,7 @@ void path_follower_base::current_path_callback(const kb_autopilot::Current_PathC
   current_path_init_ = true;
 }
 
-//void path_follower_base::reconfigure_callback(kb_autopilot::FollowerConfig &config, uint32_t level)
+//void path_follower_base::reconfigure_callback(car_autopilot::FollowerConfig &config, uint32_t level)
 //{
 //  params_.chi_infty = config.CHI_INFTY;
 //  params_.k_path = config.K_PATH;
@@ -82,7 +82,7 @@ void path_follower_base::current_path_callback(const kb_autopilot::Current_PathC
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "path_follower");
-  kb_autopilot::path_follower_base *path = new kb_autopilot::path_follower_example();
+  car_autopilot::path_follower_base *path = new car_autopilot::path_follower_example();
 
   ros::spin();
 

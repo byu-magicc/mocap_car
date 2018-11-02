@@ -8,7 +8,7 @@
 
 #define M_PI_F 3.14159265358979323846f
 #define M_PI_2_F 1.57079632679489661923f
-namespace kb_autopilot
+namespace car_autopilot
 {
 enum class fillet_state
 {

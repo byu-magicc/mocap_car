@@ -2,7 +2,7 @@
 #include "ros/ros.h"
 #include <cmath>
 
-namespace kb_autopilot
+namespace car_autopilot
 {
 
 path_manager_example::path_manager_example() : path_manager_base()

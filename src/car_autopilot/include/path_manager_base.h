@@ -11,9 +11,9 @@
 #define PATH_MANAGER_BASE_H
 
 #include <ros/ros.h>
-#include <kb_autopilot/State.h>
-#include <kb_autopilot/Current_Path.h>
-#include <kb_autopilot/Waypoint.h>
+#include <car_autopilot/State.h>
+#include <car_autopilot/Current_Path.h>
+#include <car_autopilot/Waypoint.h>
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/Float32MultiArray.h>
@@ -21,7 +21,7 @@
 #include <math.h>
 #include <Eigen/Eigen>
 
-namespace kb_autopilot
+namespace car_autopilot
 {
 class path_manager_base
 {
@@ -78,14 +78,14 @@ private:
 
   struct params_s params_;
 
-  kb_autopilot::State vehicle_state_;     /**< vehicle state */
+  car_autopilot::State vehicle_state_;     /**< vehicle state */
 
   double update_rate_;
   ros::Timer update_timer_;
 
-  void vehicle_state_callback(const kb_autopilot::StateConstPtr &msg);
+  void vehicle_state_callback(const car_autopilot::StateConstPtr &msg);
   bool state_init_;
-  void new_waypoint_callback(const kb_autopilot::Waypoint &msg);
+  void new_waypoint_callback(const car_autopilot::Waypoint &msg);
   void current_path_publish(const ros::TimerEvent &);
 };
 } //end namespace

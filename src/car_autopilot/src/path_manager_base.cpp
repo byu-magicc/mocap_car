@@ -1,7 +1,7 @@
 #include "path_manager_base.h"
 #include "path_manager_example.h"
 
-namespace kb_autopilot
+namespace car_autopilot
 {
 
 path_manager_base::path_manager_base():
@@ -13,7 +13,7 @@ path_manager_base::path_manager_base():
 
   vehicle_state_sub_ = nh_.subscribe("state", 10, &path_manager_base::vehicle_state_callback, this);
   new_waypoint_sub_ = nh_.subscribe("waypoint_path", 10, &path_manager_base::new_waypoint_callback, this);
-  current_path_pub_ = nh_.advertise<kb_autopilot::Current_Path>("current_path", 10);
+  current_path_pub_ = nh_.advertise<car_autopilot::Current_Path>("current_path", 10);
 
   update_timer_ = nh_.createTimer(ros::Duration(1.0/update_rate_), &path_manager_base::current_path_publish, this);
 
@@ -22,14 +22,14 @@ path_manager_base::path_manager_base():
   state_init_ = false;
 }
 
-void path_manager_base::vehicle_state_callback(const kb_autopilot::StateConstPtr &msg)
+void path_manager_base::vehicle_state_callback(const car_autopilot::StateConstPtr &msg)
 {
   vehicle_state_ = *msg;
 
   state_init_ = true;
 }
 
-void path_manager_base::new_waypoint_callback(const kb_autopilot::Waypoint &msg)
+void path_manager_base::new_waypoint_callback(const car_autopilot::Waypoint &msg)
 {
   if (msg.clear_wp_list == true)
   {
@@ -70,7 +70,7 @@ void path_manager_base::current_path_publish(const ros::TimerEvent &)
     manage(params_, input, output);
   }
 
-  kb_autopilot::Current_Path current_path;
+  car_autopilot::Current_Path current_path;
 
   if (output.flag)
     current_path.path_type = current_path.LINE_PATH;
@@ -94,7 +94,7 @@ void path_manager_base::current_path_publish(const ros::TimerEvent &)
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "path_manager");
-  kb_autopilot::path_manager_base *est = new kb_autopilot::path_manager_example();
+  car_autopilot::path_manager_base *est = new car_autopilot::path_manager_example();
 
   ros::spin();
 
