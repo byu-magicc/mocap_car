@@ -1,0 +1,7 @@
+<launch>
+  <arg name="vehicle_name" default="car"/>
+  <group ns="$(arg vehicle_name)">
+    <!--KB Driver-->
+    <node name="teensy" pkg="kb_utils" type="kb_driver.py" args="/dev/ttyACM0"/>
+  </group>
+</launch>
