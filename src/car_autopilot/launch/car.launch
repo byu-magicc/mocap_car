@@ -11,7 +11,7 @@
       <param name="K_PATH" value="-1.0"/>
     </node>-->
     <!--<node name="controller_command_publisher" pkg="rostopic" type="rostopic"
-        args="pub -r 10 controller_commands kb_autopilot/Controller_Commands '1.0' --> 
+        args="pub -r 10 controller_commands kb_autopilot/Controller_Commands '1.0' -->
 
     <!--<node name="current_path_publisher" pkg="rostopic" type="rostopic"
         args="pub current_path kb_autopilot/Current_Path '1' '2.0'  '[-231.0, -90.5]'  '[1.0, 0.0]'  '[0.0, 0.0]'  '100.0' '1'"/>-->
@@ -21,10 +21,7 @@
 
     <!-- <node name="record" pkg="robag" type="record" args="-O $(arg name)
     /encoder /sonar /ins /command /camera/color/image_raw/compressed /camera/depth/image_rect_raw/compressed" /> -->
-  
-    <rosparam command="load" file="$(find kb_autopilot)/param/ekf.yaml"/>
-    <node name="ekf_node" pkg="kb_autopilot" type="ekf_node" output="screen">
-      <remap from="ekf_state" to="state"/>
-    </node>
+
+
   </group>
 </launch>

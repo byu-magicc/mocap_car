@@ -7,7 +7,7 @@ import rospy
 import math
 import numpy as np
 
-from kb_autopilot.msg import State
+from car_autopilot.msg import State
 from kb_utils.msg import Encoder
 from geometry_msgs.msg import PoseStamped
 
@@ -20,7 +20,7 @@ class Mocap_To_State(object):
         """
         self.vel = 0;
         self.state_pub = rospy.Publisher("mocap", State, queue_size=1)
-        self.cmd_sub = rospy.Subscriber("vrpn_client_node/{}/pose".format(vehicle_name), PoseStamped, self.pub_state)
+        self.cmd_sub = rospy.Subscriber("/vrpn_client_node/{}/pose".format(vehicle_name), PoseStamped, self.pub_state)
         self.enc_sub = rospy.Subscriber("encoder", Encoder, self.update_encoder)
 
     def update_encoder(self, msg):
@@ -65,7 +65,7 @@ class Mocap_To_State(object):
 
 
 def main():
-    """translates mocap data to kb_autopilot/State"""
+    """translates mocap data to car_autopilot/State"""
     arg_fmt = argparse.RawDescriptionHelpFormatter
     parser = argparse.ArgumentParser(formatter_class=arg_fmt,
                                     description=main.__doc__)

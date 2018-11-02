@@ -13,6 +13,7 @@ EKF::EKF() :
   common::rosImportMatrix<double>(nh_, "Qx", Qx_);
   common::rosImportMatrix<double>(nh_, "Qu", Qu_);
   common::rosImportMatrix<double>(nh_, "R_pose", R_pose_);
+  common::rosImportMatrix<double>(nh_, "R_mocap", R_mocap_);
   common::rosImportMatrix<double>(nh_, "lambda", lambda_);
   Eigen::Matrix<double,5,1> onevec; onevec.setOnes();
   Lambda_ = onevec*lambda_.transpose()+lambda_*onevec.transpose()-lambda_*lambda_.transpose();
@@ -29,12 +30,13 @@ EKF::EKF() :
   H_pose_.block<3,3>(0,0) = Eigen::MatrixXd::Identity(3,3);
 
   // set up ROS subscribers
-  enc_sub_ = nh_.subscribe("/encoder", 1, &EKF::encoderCallback, this);
-  ins_sub_ = nh_.subscribe("/ins", 1, &EKF::insCallback, this);
-  pose_sub_ = nh_.subscribe("/pose", 1, &EKF::poseUpdate, this);
+  enc_sub_ = nh_.subscribe("encoder", 1, &EKF::encoderCallback, this);
+  ins_sub_ = nh_.subscribe("ins", 1, &EKF::insCallback, this);
+  pose_sub_ = nh_.subscribe("pose", 1, &EKF::poseUpdate, this);
+  mocap_sub_ = nh_.subscribe("mocap", 1, &EKF::mocapUpdate, this);
 
   // set up ROS publishers
-  state_pub_ = nh_.advertise<car_autopilot::State>("/ekf_state", 1);
+  state_pub_ = nh_.advertise<car_autopilot::State>("ekf_state", 1);
 }
 
 
@@ -151,9 +153,34 @@ void EKF::poseUpdate(const geometry_msgs::PoseStampedConstPtr& msg)
     r(2) = wrapAngle(r(2));
 
     // apply update
-    Eigen::Matrix<double,5,3> K = P_*H_pose_.transpose()*(H_pose_*P_*H_pose_.transpose()+R_pose_).inverse();
+    Eigen::Matrix<double,5,3> K = P_*H_pose_.transpose()*(H_pose_*P_*H_pose_.transpose()+R_mocap_).inverse();
     x_ += lambda_.cwiseProduct(K*r);
     P_ -= Lambda_.cwiseProduct(K*H_pose_*P_);
+
+    // don't allow more updates before propagation happens
+    okay_to_update_ = false;
+  }
+}
+
+void EKF::mocapUpdate(const car_autopilot::StateConstPtr& msg)
+{
+  if (is_driving_ && okay_to_update_)
+  {
+
+    // unpack estimated measurement
+    Eigen::Vector3d z(msg->p_north,msg->p_east,msg->psi);
+    Eigen::Vector3d hx = x_.segment<3>(0);
+
+    // residual error
+    Eigen::Vector3d r = z-hx;
+
+    // make sure to use shortest angle in heading update
+    r(2) = wrapAngle(r(2));
+
+    // apply update
+    Eigen::Matrix<double,5,3> K = P_*H_mocap_.transpose()*(H_mocap_*P_*H_mocap_.transpose()+R_mocap_).inverse();
+    x_ += lambda_.cwiseProduct(K*r);
+    P_ -= Lambda_.cwiseProduct(K*H_mocap_*P_);
 
     // don't allow more updates before propagation happens
     okay_to_update_ = false;

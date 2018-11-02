@@ -30,7 +30,7 @@ private:
 
   // ROS
   ros::NodeHandle nh_, nh_private_;
-  ros::Subscriber pose_sub_, ins_sub_, enc_sub_;
+  ros::Subscriber pose_sub_, ins_sub_, enc_sub_, mocap_sub_;
   ros::Publisher state_pub_;
 
   // EKF arrays
@@ -40,6 +40,8 @@ private:
   Eigen::Matrix<double,2,2> Qu_;
   Eigen::Matrix<double,3,5> H_pose_;
   Eigen::Matrix<double,3,3> R_pose_;
+  Eigen::Matrix<double,3,5> H_mocap_;
+  Eigen::Matrix<double,3,3> R_mocap_;
   Eigen::Matrix<double,5,1> lambda_;
   Eigen::Matrix<double,5,5> Lambda_;
 
@@ -52,6 +54,7 @@ private:
   void insCallback(const nav_msgs::OdometryConstPtr& msg);
   void encoderCallback(const kb_utils::EncoderConstPtr& msg);
   void poseUpdate(const geometry_msgs::PoseStampedConstPtr& msg);
+  void mocapUpdate(const car_autopilot::StateConstPtr& msg);
   void publishState(double u);
 
 };

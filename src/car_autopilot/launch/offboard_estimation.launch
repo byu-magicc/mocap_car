@@ -1,0 +1,15 @@
+<launch>
+  <arg name="vehicle_name" default="car"/>
+  <group ns="$(arg vehicle_name)">
+    <rosparam command="load" file="$(find car_autopilot)/param/ekf.yaml"/>
+    <node name="ekf_node" pkg="car_autopilot" type="ekf_node" output="screen">
+      <remap from="ekf_state" to="state"/>
+    </node>
+    <node name="mocap_transformer" pkg="car_autopilot" type="mocap_to_state.py" args="$(arg vehicle_name)" />
+
+
+    <!-- <node name="record" pkg="robag" type="record" args="-O $(arg name)
+    /encoder /sonar /ins /command /camera/color/image_raw/compressed /camera/depth/image_rect_raw/compressed" /> -->
+
+  </group>
+</launch>
