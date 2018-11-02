@@ -1,0 +1,18 @@
+<launch>
+
+
+    <node name="mocap" pkg="vrpn_client_ros" type="vrpn_client_node" output="screen">
+      <param name="server" value="192.168.0.103"/>
+      <param name="use_server_time" value="false"/>
+      <param name="refresh_tracker_frequency" value="1"/>
+    </node>
+      
+	<node name="teensy" pkg="kb_utils" type="kb_driver.py" args="/dev/ttyACM0"/>
+	<node name="mocap_to_state" pkg="kb_autopilot" type="mocap_to_state.py" />
+	<!--<node name="controller" pkg="kb_autopilot" type="controller.py" />-->
+
+    <node name="record" pkg="rosbag" type="record" args="-O mocap_$(arg name) /mocap/kbredcar/pose /command /controller_cmd /encoder /safety_pilot /sonar /state"/>
+
+    <!--<node name="inertial_sense" pkg="inertial_sense" -->
+</launch>
+
