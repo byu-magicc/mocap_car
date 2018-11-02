@@ -1,4 +1,3 @@
 [submodule "src/kbhackathon"]
 	path = src/kbhackathon
-	url = https://github.com/byu-magicc/kbhackathon.git
-
+	url = git@github.com:byu-magicc/kbhackathon.git
