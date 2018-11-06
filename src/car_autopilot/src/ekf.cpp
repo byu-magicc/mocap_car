@@ -28,6 +28,8 @@ EKF::EKF() :
   B_(4,1) = 1;
   H_pose_.setZero();
   H_pose_.block<3,3>(0,0) = Eigen::MatrixXd::Identity(3,3);
+  H_mocap_.setZero();
+  H_mocap_.block<3,3>(0,0) = Eigen::MatrixXd::Identity(3,3);
 
   // set up ROS subscribers
   enc_sub_ = nh_.subscribe("encoder", 1, &EKF::encoderCallback, this);
@@ -51,6 +53,7 @@ void EKF::encoderCallback(const kb_utils::EncoderConstPtr& msg)
   double v_meas = msg->vel;
 
   // check velocity to start the ekf
+  //is_driving_ = false;
   if (!is_driving_)
     if (fabs(v_meas) > 0.002)
       is_driving_ = true;
@@ -64,6 +67,7 @@ void EKF::encoderCallback(const kb_utils::EncoderConstPtr& msg)
 
   if (is_driving_)
   {
+    std::cout << "driving" << std::endl;
     // state kinematics
     Eigen::Matrix<double, 5, 1> f;
     f.setZero();
@@ -90,7 +94,7 @@ void EKF::encoderCallback(const kb_utils::EncoderConstPtr& msg)
   }
 
   // publish the current state
-  publishState(v_meas+bv);
+  publishState(v_meas+bv, msg);
 }
 
 
@@ -167,6 +171,8 @@ void EKF::mocapUpdate(const car_autopilot::StateConstPtr& msg)
   if (is_driving_ && okay_to_update_)
   {
 
+    std::cout << "mocap" << std::endl;
+    std::cout << x_.segment<3>(0) << std::endl;
     // unpack estimated measurement
     Eigen::Vector3d z(msg->p_north,msg->p_east,msg->psi);
     Eigen::Vector3d hx = x_.segment<3>(0);
@@ -177,10 +183,15 @@ void EKF::mocapUpdate(const car_autopilot::StateConstPtr& msg)
     // make sure to use shortest angle in heading update
     r(2) = wrapAngle(r(2));
 
+    std::cout << r << std::endl;
+
     // apply update
     Eigen::Matrix<double,5,3> K = P_*H_mocap_.transpose()*(H_mocap_*P_*H_mocap_.transpose()+R_mocap_).inverse();
+    std::cout << K << std::endl;
     x_ += lambda_.cwiseProduct(K*r);
     P_ -= Lambda_.cwiseProduct(K*H_mocap_*P_);
+
+    std::cout << x_.segment<3>(0) << std::endl;
 
     // don't allow more updates before propagation happens
     okay_to_update_ = false;
@@ -188,9 +199,10 @@ void EKF::mocapUpdate(const car_autopilot::StateConstPtr& msg)
 }
 
 
-void EKF::publishState(double u)
+void EKF::publishState(double u, const kb_utils::EncoderConstPtr& enc_msg)
 {
   car_autopilot::State msg;
+  msg.header.stamp = enc_msg->header.stamp;
   msg.p_north = x_(0); // north position (m)
   msg.p_east =  x_(1); // east position (m)
   msg.psi =     x_(2); // unwrapped yaw angle (rad)

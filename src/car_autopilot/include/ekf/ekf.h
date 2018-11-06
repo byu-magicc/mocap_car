@@ -55,7 +55,7 @@ private:
   void encoderCallback(const kb_utils::EncoderConstPtr& msg);
   void poseUpdate(const geometry_msgs::PoseStampedConstPtr& msg);
   void mocapUpdate(const car_autopilot::StateConstPtr& msg);
-  void publishState(double u);
+  void publishState(double u, const kb_utils::EncoderConstPtr& enc_msg);
 
 };
 
