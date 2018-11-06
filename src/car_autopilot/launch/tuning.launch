@@ -1,7 +1,9 @@
 <launch>
-
-	<node name="teensy" pkg="kb_utils" type="kb_driver.py" args="/dev/ttyACM0"/>
-	<node name="controller" pkg="car_autopilot" type="controller.py" >
-		<remap from="state" to="mocap"/>
-	</node>
+	<arg name="vehicle_name" default="car"/>
+  <group ns="$(arg vehicle_name)">
+		<node name="teensy" pkg="kb_utils" type="kb_driver.py" args="/dev/ttyACM0"/>
+		<node name="controller" pkg="car_autopilot" type="controller.py" >
+			<remap from="state" to="mocap"/>
+		</node>
+	</group>
 </launch>
