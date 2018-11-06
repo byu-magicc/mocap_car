@@ -6,15 +6,17 @@
       <remap from="ekf_state" to="state"/>
     </node>
     <node name="mocap_transformer" pkg="car_autopilot" type="mocap_to_state.py" />
-    <!--<node name="controller" pkg="car_autopilot" type="controller.py" />
+		<node name="controller" pkg="car_autopilot" type="controller.py" >
+			<remap from="state" to="mocap"/>
+		</node>
     <node name="path_follower" pkg="car_autopilot" type="path_follower">
       <param name="K_PATH" value="-1.0"/>
-    </node>-->
+    </node>
     <!--<node name="controller_command_publisher" pkg="rostopic" type="rostopic"
         args="pub -r 10 controller_commands kb_autopilot/Controller_Commands '1.0' -->
 
-    <!--<node name="current_path_publisher" pkg="rostopic" type="rostopic"
-        args="pub current_path kb_autopilot/Current_Path '1' '2.0'  '[-231.0, -90.5]'  '[1.0, 0.0]'  '[0.0, 0.0]'  '100.0' '1'"/>-->
+    <node name="current_path_publisher" pkg="rostopic" type="rostopic"
+        args="pub current_path kb_autopilot/Current_Path '1' '1.0'  '[0.0, 0.0]'  '[1.0, 0.0]'  '[0.0, 0.0]'  '1.0' '1'"/>
 
     <!--KB Driver-->
     <node name="teensy" pkg="kb_utils" type="kb_driver.py" args="/dev/ttyACM0"/>

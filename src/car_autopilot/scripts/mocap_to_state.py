@@ -11,6 +11,12 @@ from car_autopilot.msg import State
 from kb_utils.msg import Encoder
 from geometry_msgs.msg import PoseStamped
 
+def wrap_angle(psi):
+    while psi > math.pi:
+        psi -= 2*math.pi
+    while psi < -math.pi:
+        psi += 2*math.pi
+    return psi
 
 class Mocap_To_State(object):
 
@@ -46,7 +52,7 @@ class Mocap_To_State(object):
         # x_f = w_r*x + y_r*z
         # y_f = w_r*y + y_r*w
         # z_f = w_r*z - y_r*x
-        state_msg.psi = -math.atan2(2*(w*z + x*y), 1 - 2*(y*y + z*z))
+        state_msg.psi = wrap_angle(-math.atan2(2*(w*z + x*y), 1 - 2*(y*y + z*z)) - math.pi/2)
         # val = 2*(w*y - x*z)
         # if (math.fabs(val) > 1):
         #     state_msg.psi = np.sign(val)*np.pi/2;
