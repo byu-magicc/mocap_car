@@ -60,7 +60,7 @@ void path_follower_base::current_path_callback(const car_autopilot::Current_Path
 
   input_.u_d = msg->Va_d;
 
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 2; i++)
   {
     input_.r_path[i] = msg->r[i];
     input_.q_path[i] = msg->q[i];

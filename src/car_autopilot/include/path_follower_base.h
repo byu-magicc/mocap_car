@@ -30,9 +30,9 @@ protected:
   {
     enum path_type p_type;
     float u_d;
-    float r_path[3];
-    float q_path[3];
-    float c_orbit[3];
+    float r_path[2];
+    float q_path[2];
+    float c_orbit[2];
     float rho_orbit;
     int lam_orbit;
     float pn;               /** position north */
