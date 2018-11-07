@@ -16,8 +16,12 @@
     <!--<node name="controller_command_publisher" pkg="rostopic" type="rostopic"
         args="pub -r 10 controller_commands car_autopilot/Controller_Commands '1.0' -->
 
-    <node name="current_path_publisher" pkg="rostopic" type="rostopic"
-        args="pub current_path -r 1 car_autopilot/Current_Path '1' '1.0'  '[1.0, 0.0]'  '[0.0, 1.0]'  '[0.0, 0.0]'  '100.0' '1'"/>
+    <!--<node name="current_path_publisher" pkg="rostopic" type="rostopic"
+        args="pub current_path -r 1 car_autopilot/Current_Path '1' '1.0'  '[1.0, 0.0]'  '[0.0, 1.0]'  '[0.0, 0.0]'  '100.0' '1'"/>-->
+    <node name="path_manager" pkg="car_autopilot" type="path_manager" output="screen"/>
+    <node name="waypoint_publisher" pkg="car_autopilot" type="path_planner">
+      <rosparam command="load" file="$(find car_autopilot)/param/waypoint_list.yaml" />
+    </node>
 
     <!--KB Driver-->
     <node name="teensy" pkg="kb_utils" type="kb_driver.py" args="/dev/ttyACM0"/>
