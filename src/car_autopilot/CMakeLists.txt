@@ -171,6 +171,12 @@ add_executable(path_manager
 add_dependencies(path_manager ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
 target_link_libraries(path_manager ${catkin_LIBRARIES})
 
+## Declare a C++ executable
+add_executable(path_planner
+            src/path_planner.cpp)
+add_dependencies(path_planner ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+target_link_libraries(path_planner ${catkin_LIBRARIES})
+
 #############
 ## Install ##
 #############
