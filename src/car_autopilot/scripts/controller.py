@@ -17,7 +17,7 @@ class Controller:
         # self.est_sub = rospy.Subscriber('odom', self.odometry_callback, queue_size = 1)
         self.est_sub = rospy.Subscriber('state', State, self.state_callback, queue_size = 1)   #will we be using the state message or odom from estimator?
         self.command_pub = rospy.Publisher('command', Command, queue_size = 1)
-	#self.enc_sub = rospy.Subscriber('encoder', Encoder,self.encoder_callback, queue_size = 1)
+        #self.enc_sub = rospy.Subscriber('encoder', Encoder,self.encoder_callback, queue_size = 1)
 
         #Variables for the linear velocity
         self.Kp_v = 0.5
@@ -28,8 +28,8 @@ class Controller:
         self.integrator_v = 0.0
         self.sigma_v = 2.5
         self.prev_v = 0.0
-	self.e_sat_v = 0.3
-	self.u_sat_v = 0.3
+        self.e_sat_v = 0.3
+        self.u_sat_v = 0.3
 
         self.prev_time = rospy.Time.now()
         self.v_dot = 0.0
@@ -59,17 +59,17 @@ class Controller:
 
     def reference_callback(self, msg):
         #will store the reference values
-	print 'Message received'
+        print 'Message received'
         self.v_ref = msg.u_c
         self.psi_ref = msg.psi_c #heading angle
 
     def run(self):
-	while not rospy.is_shutdown():
-	    rospy.spin()
+        while not rospy.is_shutdown():
+            rospy.spin()
 
     def state_callback(self, msg):
 
-        psi = -msg.psi #Heading angle
+        psi = msg.psi #Heading angle
         v = msg.u   #Body velocity
         now = rospy.Time.now()
         dt = (now - self.prev_time).to_sec()
@@ -139,7 +139,7 @@ class Controller:
     	    self.integrator_v = self.integrator_v + dt/self.Ki_v * (self.v_command - u)
 
         vel = Command()
-        vel.steer = self.psi_command
+        vel.steer = -self.psi_command
         vel.throttle = self.v_command
 
         self.command_pub.publish(vel)
