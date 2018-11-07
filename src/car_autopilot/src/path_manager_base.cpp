@@ -13,6 +13,7 @@ path_manager_base::path_manager_base():
 
   vehicle_state_sub_ = nh_.subscribe("state", 10, &path_manager_base::vehicle_state_callback, this);
   new_waypoint_sub_ = nh_.subscribe("waypoint_path", 10, &path_manager_base::new_waypoint_callback, this);
+  print_list_sub_ = nh_.subscribe("print_waypoint_path", 10, &path_manager_base::print_waypoints_callback, this);
   current_path_pub_ = nh_.advertise<car_autopilot::Current_Path>("current_path", 10);
 
   update_timer_ = nh_.createTimer(ros::Duration(1.0/update_rate_), &path_manager_base::current_path_publish, this);
@@ -20,6 +21,18 @@ path_manager_base::path_manager_base():
   num_waypoints_ = 0;
 
   state_init_ = false;
+}
+
+void path_manager_base::print_waypoints_callback(const std_msgs::Bool msg)
+{
+    for (int i(0);i<waypoints_.size();i++)
+    {
+        if(i == idx_a_)
+            ROS_INFO("n:%f, e:%f <-- previousely achieved", waypoints_[i].w[0], waypoints_[i].w[1]);
+        else
+            ROS_INFO("n:%f, e:%f", waypoints_[i].w[0], waypoints_[i].w[1]);
+    }
+    ROS_INFO("\n");
 }
 
 void path_manager_base::vehicle_state_callback(const car_autopilot::StateConstPtr &msg)
@@ -38,19 +51,21 @@ void path_manager_base::new_waypoint_callback(const car_autopilot::Waypoint &msg
     idx_a_ = 0;
     return;
   }
-  if (msg.set_current || num_waypoints_ == 0)
-  {
-    waypoint_s currentwp;
-    currentwp.w[0] = vehicle_state_.p_north;
-    currentwp.w[1] = vehicle_state_.p_east;
-    waypoints_.clear();
-    waypoints_.push_back(currentwp);
-    num_waypoints_ = 1;
-    idx_a_ = 0;
-  }
+//  if (msg.set_current || num_waypoints_ == 0)
+//  {
+//    waypoint_s currentwp;
+//    currentwp.w[0] = vehicle_state_.p_north;
+//    currentwp.w[1] = vehicle_state_.p_east;
+//    currentwp.u_d = msg.u_d;
+//    waypoints_.clear();
+//    waypoints_.push_back(currentwp);
+//    num_waypoints_ = 1;
+//    idx_a_ = 0;
+//  }
   waypoint_s nextwp;
   nextwp.w[0]         = msg.w[0];
   nextwp.w[1]         = msg.w[1];
+  nextwp.u_d = msg.u_d;
   waypoints_.push_back(nextwp);
   num_waypoints_++;
 }
@@ -76,7 +91,7 @@ void path_manager_base::current_path_publish(const ros::TimerEvent &)
     current_path.path_type = current_path.LINE_PATH;
   else
     current_path.path_type = current_path.ORBIT_PATH;
-  current_path.Va_d = output.Va_d;
+  current_path.u_d = output.u_d;
   for (int i = 0; i < 2; i++)
   {
     current_path.r[i] = output.r[i];

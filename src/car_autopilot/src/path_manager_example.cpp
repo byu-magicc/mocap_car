@@ -16,21 +16,19 @@ void path_manager_example::manage(const params_s &params, const input_s &input, 
 
   if (num_waypoints_ < 2)
   {
-    ROS_WARN_THROTTLE(4, "No waypoints received! Loitering about origin at 50m");
+    ROS_WARN_THROTTLE(4, "No waypoints received");
     output.flag = false;
-    output.Va_d = 12;
     output.c[0] = 0.0f;
     output.c[1] = 0.0f;
-    output.c[2] = -50.0f;
     output.rho = params.R_min;
     output.lambda = 1;
-    output.Va_d = 0;
+    output.u_d = 0;
   }
   else
   {
       /** Switch the following for flying directly to waypoints, or filleting corners */
-      //manage_line(params, input, output);
-      manage_fillet(params, input, output);
+      manage_line(params, input, output);
+      // manage_fillet(params, input, output);
   }
 }
 
@@ -66,7 +64,7 @@ void path_manager_example::manage_line(const params_s &params, const input_s &in
   w_ip1 << waypoints_[idx_c].w[0], waypoints_[idx_c].w[1], 0;
 
   output.flag = true;
-  output.Va_d = 1;
+  output.u_d = waypoints_[idx_a_].u_d;
   output.r[0] = w_im1(0);
   output.r[1] = w_im1(1);
   //output.r[2] = w_im1(2);
@@ -125,7 +123,7 @@ void path_manager_example::manage_fillet(const params_s &params, const input_s &
 
   float R_min = params.R_min;
 
-  output.Va_d = 1;
+  output.u_d = waypoints_[idx_a_].u_d;
   output.r[0] = w_im1(0);
   output.r[1] = w_im1(1);
   //output.r[2] = w_im1(2);

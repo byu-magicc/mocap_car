@@ -58,7 +58,7 @@ void path_follower_base::current_path_callback(const car_autopilot::Current_Path
   else if (msg->path_type == msg->ORBIT_PATH)
     input_.p_type = path_type::Orbit;
 
-  input_.u_d = msg->Va_d;
+  input_.u_d = msg->u_d;
 
   for (int i = 0; i < 2; i++)
   {

@@ -23,9 +23,6 @@ void path_follower_example::follow(const params_s &params, const input_s &input,
     // heading command
     output.psi_c = psi_q - params.psi_infty*2/M_PI*atanf(params.k_path*path_error);
 
-    // desired altitude
-    float h_d = -input.r_path[2] - sqrtf(powf((input.r_path[0] - input.pn), 2) + powf((input.r_path[1] - input.pe),
-                                         2))*(input.q_path[2])/sqrtf(powf(input.q_path[0], 2) + powf(input.q_path[1], 2));
   }
   else // follow a orbit path specified by c_orbit, rho_orbit, and lam_orbit
   {
